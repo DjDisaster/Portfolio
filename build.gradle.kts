@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "2.3.10"
-    application
+    kotlin("jvm") version "2.3.20-Beta2"
+    id("com.gradleup.shadow") version "8.3.0"
 }
 
 group = "me.djdisaster"
@@ -10,21 +10,25 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation(kotlin("test"))
-}
-
 kotlin {
-    jvmToolchain(23)
+    jvmToolchain(21)
 }
 
-tasks.test {
-    useJUnitPlatform()
+dependencies {
+    implementation(kotlin("stdlib"))
 }
 
+tasks {
+    shadowJar {
+        archiveBaseName.set("Portfolio")
+        archiveClassifier.set("")
+        archiveVersion.set("")
+        manifest {
+            attributes["Main-Class"] = "me.djdisaster.MainKt"
+        }
+    }
 
-tasks.jar {
-    manifest {
-        attributes["Main-Class"] = "me.djdisaster.MainKt"
+    build {
+        dependsOn(shadowJar)
     }
 }

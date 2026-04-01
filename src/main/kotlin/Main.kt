@@ -1,33 +1,30 @@
 package me.djdisaster
 
 import com.sun.net.httpserver.HttpServer
-import java.io.File
 import java.net.InetSocketAddress
-import java.nio.file.Files
 
 fun main() {
-    val file = File(System.getProperty("user.home") + "/code/site/Portfolio/site/index.html")
-    val server = HttpServer.create(InetSocketAddress(8000), 0)
+    val html = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Hello</title>
+        </head>
+        <body>
+            <h1>Hello world</h1>
+        </body>
+        </html>
+    """.trimIndent().toByteArray()
+
+    val server = HttpServer.create(InetSocketAddress("127.0.0.1", 8000), 0)
 
     server.createContext("/") { exchange ->
-        if (!file.exists() || !file.isFile) {
-            exchange.sendResponseHeaders(404, 0)
-            exchange.responseBody.use { it.write("404 Not Found".toByteArray()) }
-            return@createContext
-        }
-
-        val contentType = Files.probeContentType(file.toPath()) ?: "text/html"
-        exchange.responseHeaders.add("Content-Type", contentType)
-        exchange.sendResponseHeaders(200, file.length())
-
-        file.inputStream().use { input ->
-            exchange.responseBody.use { output ->
-                input.copyTo(output)
-            }
-        }
+        exchange.responseHeaders.add("Content-Type", "text/html; charset=utf-8")
+        exchange.sendResponseHeaders(200, html.size.toLong())
+        exchange.responseBody.use { it.write(html) }
     }
 
     server.executor = null
     server.start()
-    println("Serving http://localhost:8000")
+    println("Serving http://127.0.0.1:8000")
 }
