@@ -21,3 +21,10 @@ kotlin {
 tasks.test {
     useJUnitPlatform()
 }
+
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "me.djdisaster.MainKt"
+    }
+}
